@@ -1,0 +1,6 @@
+node_modules
+dist
+.DS_Store
+.impeccable
+# Rendered promo videos are large; the scripts in video/pipeline regenerate them.
+video/*.mp4

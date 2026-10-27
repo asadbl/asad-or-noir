@@ -1,0 +1,18 @@
+{
+  "name": "asad-watch",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5173",
+    "build": "vite build",
+    "preview": "vite preview --port 4173",
+    "deploy": "vite build && cd dist && git init -q -b gh-pages && git add -A && git commit -q -m deploy && git push -q -f \"$(git -C .. remote get-url origin)\" gh-pages && rm -rf .git"
+  },
+  "dependencies": {
+    "@splinetool/runtime": "^2.0.114"
+  },
+  "devDependencies": {
+    "vite": "^8.3.5"
+  }
+}

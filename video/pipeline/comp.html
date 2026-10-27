@@ -1,0 +1,133 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Manrope:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --gold: #d9b56c; --ivory: #f1ede4; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: #050505; font-family: Manrope, sans-serif; }
+  .room { position: absolute; inset: 0;
+    background:
+      radial-gradient(60% 55% at 50% 42%, rgba(205,160,80,.16), transparent 70%),
+      radial-gradient(120% 80% at 50% 120%, rgba(30,24,16,.9), transparent 60%),
+      linear-gradient(#0a0908, #050505 62%, #0b0a08 62.2%, #070605); }
+  .desk { position: absolute; left: 0; right: 0; top: 62%; bottom: 0;
+    background: linear-gradient(rgba(217,181,108,.05), transparent 40%); }
+  .vignette { position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(75% 75% at 50% 45%, transparent 55%, rgba(0,0,0,.75)); }
+
+  .cam { position: absolute; left: 50%; top: 50%; width: 0; height: 0; perspective: 2400px; }
+  .rig { position: absolute; left: 0; top: 0; transform-style: preserve-3d; }
+
+  /* Display: 1600x1000 screen scaled to 0.72 inside a thin dark-aluminium frame. */
+  .monitor { position: absolute; left: -604px; top: -462px; width: 1208px; height: 775px;
+    border-radius: 22px; padding: 14px;
+    background: linear-gradient(160deg, #3a3835, #1b1a19 40%, #0e0e0d);
+    box-shadow: 0 0 0 1px rgba(255,255,255,.08) inset, 0 60px 120px rgba(0,0,0,.8), 0 0 90px rgba(205,160,80,.08); }
+  .bezel { width: 100%; height: 100%; border-radius: 12px; background: #000; padding: 12px; overflow: hidden; position: relative; }
+  .screen { width: 1600px; height: 1000px; transform: scale(.7225); transform-origin: 0 0; position: relative; overflow: hidden; background: #070707; }
+  .glare { position: absolute; inset: 0; pointer-events: none; border-radius: 12px;
+    background: linear-gradient(115deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,.02) 28%, transparent 42%); }
+  .neck { position: absolute; left: -95px; top: 300px; width: 190px; height: 190px;
+    background: linear-gradient(90deg, #121211, #34322f 45%, #1a1918 70%, #0d0d0c);
+    clip-path: polygon(14% 0, 86% 0, 100% 100%, 0 100%); }
+  .foot { position: absolute; left: -230px; top: 486px; width: 460px; height: 16px; border-radius: 4px 4px 10px 10px;
+    background: linear-gradient(#3b3936, #151413); box-shadow: 0 18px 40px rgba(0,0,0,.9); }
+  .reflection { position: absolute; left: -600px; top: 505px; width: 1200px; height: 220px; opacity: .16;
+    background: radial-gradient(50% 60% at 50% 0%, rgba(217,181,108,.55), transparent 70%); filter: blur(18px); }
+
+  /* Browser window */
+  .chrome { height: 76px; background: #1c1b1a; border-bottom: 1px solid #2b2a28; position: relative; }
+  .tabs { height: 40px; display: flex; align-items: flex-end; padding-left: 92px; background: #121110; }
+  .lights { position: absolute; left: 18px; top: 14px; display: flex; gap: 9px; }
+  .lights i { width: 13px; height: 13px; border-radius: 50%; display: block; }
+  .tab { height: 32px; width: 250px; background: #1c1b1a; border-radius: 10px 10px 0 0; display: flex; align-items: center; gap: 10px; padding: 0 14px;
+    color: #e8e4dc; font-size: 13px; }
+  .tab .fav { width: 16px; height: 16px; border-radius: 50%; background: #000; border: 1.5px solid var(--gold); color: var(--ivory);
+    font: 400 10px/13px 'Cormorant Garamond', serif; text-align: center; }
+  .tab .x { margin-left: auto; color: #8a857c; font-size: 14px; }
+  .tab2 { color: #8a857c; font-size: 18px; padding: 0 0 6px 14px; }
+  .bar { height: 36px; display: flex; align-items: center; gap: 16px; padding: 0 14px; color: #8a857c; font-size: 15px; }
+  .url { flex: 1; height: 26px; border-radius: 13px; background: #2a2927; display: flex; align-items: center; gap: 9px; padding: 0 14px; color: #e8e4dc; font-size: 13.5px; letter-spacing: .01em; }
+  .url svg { width: 12px; height: 12px; }
+  .url span { color: #8a857c; }
+  .view { position: absolute; left: 0; top: 76px; width: 1600px; height: 924px; overflow: hidden; }
+  .view img { display: block; width: 1600px; height: 924px; }
+
+  /* Brand badge laid over the runtime badge in the bottom-right corner */
+  .brand { position: absolute; left: 1304px; top: 832px; width: 292px; height: 86px; border-radius: 22px;
+    background: #0b0a09; display: flex; align-items: center; gap: 16px; padding: 0 22px;
+    box-shadow: 0 0 0 1px rgba(217,181,108,.22) inset; }
+  .brand .mono { width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid var(--gold); display: grid; place-items: center;
+    color: var(--ivory); font: 400 26px/1 'Cormorant Garamond', serif; background: radial-gradient(circle at 35% 30%, #1d1a15, #000); }
+  .brand .txt { display: flex; flex-direction: column; gap: 5px; }
+  .brand b { color: var(--ivory); font: 400 22px/1 'Cormorant Garamond', serif; letter-spacing: .38em; }
+  .brand small { color: var(--gold); font-size: 10px; letter-spacing: .3em; text-transform: uppercase; }
+
+  .cursor { position: absolute; left: 0; top: 0; width: 26px; height: 38px; transform-origin: 3px 3px; filter: drop-shadow(0 2px 3px rgba(0,0,0,.6)); }
+
+  /* End card */
+  .end { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; background: radial-gradient(55% 55% at 50% 50%, rgba(205,160,80,.12), transparent 70%), #050505; }
+  .end .stack { text-align: center; }
+  .end .logo { width: 120px; height: 120px; margin: 0 auto 34px; border-radius: 50%; border: 2px solid var(--gold); display: grid; place-items: center;
+    color: var(--ivory); font: 300 70px/1 'Cormorant Garamond', serif; }
+  .end h1 { color: var(--ivory); font: 300 150px/1 'Cormorant Garamond', serif; letter-spacing: .32em; margin-right: -.32em; }
+  .end .model { color: var(--gold); font: italic 300 44px/1 'Cormorant Garamond', serif; margin-top: 22px; }
+  .end .rule { width: 90px; height: 1px; background: var(--gold); opacity: .6; margin: 34px auto 26px; }
+  .end .url2 { color: #918b80; font-size: 14px; letter-spacing: .42em; text-transform: uppercase; }
+</style></head>
+<body>
+  <div class="room"><div class="desk"></div></div>
+  <div class="cam"><div class="rig" id="rig">
+    <div class="reflection"></div>
+    <div class="neck"></div><div class="foot"></div>
+    <div class="monitor"><div class="bezel">
+      <div class="screen">
+        <div class="chrome">
+          <div class="lights"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+          <div class="tabs"><div class="tab"><span class="fav">A</span>ASAD — Or Noir<span class="x">×</span></div><div class="tab2">+</div></div>
+          <div class="bar"><span>←</span><span>→</span><span>↻</span>
+            <div class="url"><svg viewBox="0 0 12 12"><rect x="2" y="5" width="8" height="6" rx="1.2" fill="#8a857c"/><path d="M4 5V3.6a2 2 0 0 1 4 0V5" stroke="#8a857c" stroke-width="1.3" fill="none"/></svg>asad.watch<span>/or-noir</span></div>
+          </div>
+        </div>
+        <div class="view">
+          <img id="frame">
+          <div class="brand"><div class="mono">A</div><div class="txt"><b>ASAD</b><small>Horlogerie</small></div></div>
+          <svg class="cursor" id="cursor" viewBox="0 0 26 38"><path d="M2 2 L2 30 L9 23.5 L13.6 34.5 L18 32.6 L13.4 21.8 L22.5 21.8 Z" fill="#000" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="glare"></div>
+    </div></div>
+  </div></div>
+  <div class="vignette"></div>
+  <div class="end" id="end"><div class="stack">
+    <div class="logo">A</div><h1>ASAD</h1><p class="model">Or Noir</p><div class="rule"></div><p class="url2">asad.watch</p>
+  </div></div>
+<script>
+  const clamp = (v) => Math.min(1, Math.max(0, v));
+  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const lerp = (a, b, t) => a + (b - a) * t;
+  // Camera keys: [time s, scale, rotY deg, rotX deg, x px, y px]
+  const KEYS = [
+    [0, 0.86, -14, 4, 60, 40], [3.2, 1.0, -4, 1.5, 0, 0], [9, 1.02, 3, 1, 0, 0], [17, 1.04, -3, 1, 0, 0],
+    [21.5, 1.06, 0, 0.5, 0, 10], [24.5, 1.18, 2, 0.5, 0, -40], [27.5, 1.15, -1, 0.5, 0, -30], [29, 0.9, 0, 2, 0, 20],
+  ];
+  function camAt(t) {
+    let i = 0; while (i < KEYS.length - 2 && t > KEYS[i + 1][0]) i++;
+    const a = KEYS[i], b = KEYS[i + 1], k = ease(clamp((t - a[0]) / (b[0] - a[0])));
+    return a.map((v, j) => lerp(v, b[j], k));
+  }
+  window.renderFrame = async (v, siteFrame, cur, fps) => {
+    const t = v / fps;
+    const img = document.getElementById('frame');
+    const src = `frames/${String(siteFrame).padStart(5, '0')}.jpg`;
+    if (!img.src.endsWith(src)) { img.src = src; await img.decode(); }
+    const [, s, ry, rx, x, y] = camAt(t);
+    document.getElementById('rig').style.transform = `translate(${x}px, ${y}px) rotateX(${rx}deg) rotateY(${ry}deg) scale(${s})`;
+    const c = document.getElementById('cursor');
+    c.style.opacity = cur.visible;
+    c.style.transform = `translate(${cur.x - 3}px, ${cur.y - 3}px) scale(${cur.down ? 0.86 : 1})`;
+    document.getElementById('end').style.opacity = clamp((t - 27.6) / 0.9);
+    document.body.style.opacity = clamp(t / 0.6);
+  };
+</script>
+</body></html>
