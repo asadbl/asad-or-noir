@@ -7,7 +7,7 @@
     "dev": "vite --port 5173",
     "build": "vite build",
     "preview": "vite preview --port 4173",
-    "deploy": "vite build && cd dist && git init -q -b gh-pages && git add -A && git commit -q -m deploy && git push -q -f \"$(git -C .. remote get-url origin)\" gh-pages && rm -rf .git"
+    "deploy": "vite build && cd dist && git init -q -b gh-pages && git add -A && git commit -q -m deploy && git -c http.postBuffer=524288000 push -q -f \"$(git -C .. remote get-url origin)\" gh-pages && rm -rf .git"
   },
   "dependencies": {
     "@splinetool/runtime": "^2.0.114"
